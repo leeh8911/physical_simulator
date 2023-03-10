@@ -11,19 +11,18 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+// TODO : 마우스 클릭을 통해 원을 생성하기
+// TODO : 생성된 객체가 바닥으로 떨어지게 하기
+// TODO : 생성된 객체가 다른 객체와 충돌확인 하기
+// TODO : 충돌한 객체가 서로 반발력을 주고받게 하기
+
 int main(int argc, char** argv)
 {
     std::cout << argc << ", " << argv[0] << std::endl;
 
     sf::Clock clock{};
-    sf::Clock ai_timer{};
 
     float interval = 0.F;
-
-    const sf::Time ai_time = sf::seconds(0.5F);
-
-    sf::RectangleShape rect(sf::Vector2f(200, 200));
-    rect.setFillColor(sf::Color::Red);
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML works!");
     window.setFramerateLimit(60);
@@ -43,24 +42,18 @@ int main(int argc, char** argv)
                 std::cout << "Terminated Program!";
                 window.close();
             }
+            if (event.type == sf::Event::EventType::MouseButtonPressed)
+            {
+                if (event.mouseButton.button == sf::Mouse::Left)
+                {
+                    sf::Vector2i position = sf::Mouse::getPosition(window);
+                    std::cout << "Mouse Left Clicked! " << position.x << ", "
+                              << position.y << std::endl;
+                }
+            }
         }
 
-        if (ai_timer.getElapsedTime().asSeconds() > ai_time.asSeconds())
-        {
-            std::cout << "AI Timer: " << ai_timer.getElapsedTime().asSeconds()
-                      << std::endl;
-            ai_timer.restart();
-        }
-
-        if (static_cast<size_t>(interval) % 2 == 0)
-        {
-            window.clear(sf::Color::White);
-        }
-        else
-        {
-            window.clear(sf::Color::Black);
-        }
-        window.draw(rect);
+        window.clear(sf::Color::White);
         window.display();
     }
     return 0;
