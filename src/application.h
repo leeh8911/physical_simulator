@@ -1,0 +1,50 @@
+﻿/// @file application.h
+/// @author sangwon lee (leeh8911@gmail.com)
+/// @brief
+/// @version 0.1
+/// @date 2023-03-12
+///
+/// @copyright Copyright (c) 2023
+///
+///
+
+#ifndef SRC_APPLICATION_H_
+#define SRC_APPLICATION_H_
+
+#include <SFML/Graphics.hpp>
+#include <array>
+#include <memory>
+#include <string>
+#include <thread>
+#include <vector>
+
+namespace engine
+{
+
+// start forward declaration
+class EventHandler;
+class PhysicalSolver;
+class Renderer;
+// end forward declaration
+
+class Application
+{
+ public:
+    Application(std::string name, sf::Vector2u window_size,
+                sf::Vector2u world_size);
+    ~Application();
+
+    bool Run();
+
+ private:
+    std::string name_{""};
+    std::vector<std::thread> threads_{};
+
+    sf::RenderWindow window_{};
+    PhysicalSolver solver_{};
+    EventHandler event_handler_{};
+    Renderer renderer_{};
+};
+}  // namespace engine
+
+#endif  // SRC_APPLICATION_H_
