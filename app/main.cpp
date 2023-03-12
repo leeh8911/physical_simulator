@@ -14,7 +14,7 @@
 
 int main(int argc, char** argv)
 {
-    constexpr size_t kWindowWidth = 1024;
+    constexpr size_t kWindowWidth = 1400;
     constexpr size_t kWindowHeight = 768;
 
     for (int i = 0; i < argc; ++i)

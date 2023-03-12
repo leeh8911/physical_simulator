@@ -10,6 +10,8 @@
 
 #include "src/renderer.h"
 
+#include <SFML/Graphics.hpp>
+
 namespace engine
 {
 
@@ -36,14 +38,14 @@ Renderer::Renderer(sf::Vector2u window_size)
 }
 
 void Renderer::Render(sf::RenderWindow& window,
-                      std::vector<std::shared_ptr<sf::Drawable>> drawables);
+                      const PhysicalObjectPtrList& objects)
 {
     window.draw(dashboard_box_);
     window.draw(world_box_);
 
-    for (auto& drawable : drawables)
+    for (auto& object : objects)
     {
-        window.draw(*drawable);
+        window.draw(*(object->GetDrawable()));
     }
 }
 }  // namespace engine

@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "src/event_handler.h"
+#include "src/physical_object.h"
 #include "src/renderer.h"
 
 namespace engine
@@ -39,6 +40,8 @@ class Application
 
     EventManager event_handler_{};
     Renderer renderer_{};
+
+    std::vector<std::shared_ptr<PhysicalObject>> physical_objects_{};
 
     void InitializeEventProcess();
 };

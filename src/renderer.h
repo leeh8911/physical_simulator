@@ -12,6 +12,10 @@
 #define SRC_RENDERER_H_
 
 #include <SFML/Graphics.hpp>
+#include <memory>
+#include <vector>
+
+#include "src/physical_object.h"
 
 namespace engine
 {
@@ -19,10 +23,11 @@ class Renderer
 {
  public:
     Renderer() = default;
-    Renderer(sf::Vector2u window_size);
     ~Renderer() = default;
 
-    void Render(sf::RenderWindow& window);
+    Renderer(sf::Vector2u window_size);
+
+    void Render(sf::RenderWindow& window, const PhysicalObjectPtrList& objects);
 
  private:
     sf::RectangleShape world_box_{};

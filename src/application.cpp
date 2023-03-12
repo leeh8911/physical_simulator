@@ -15,6 +15,8 @@
 #include <iostream>
 #include <string>
 
+#include "src/utils.h"
+
 namespace engine
 {
 
@@ -30,8 +32,13 @@ void Application::InitializeEventProcess()
 {
     auto mouse_click_callback = [this](sf::Event event)
     {
-        std::cout << event.mouseButton.button << "[" << event.mouseButton.x
-                  << ", " << event.mouseButton.y << "]" << std::endl;
+        if (event.mouseButton.button == sf::Mouse::Button::Left)
+        {
+            auto object = std::make_shared<Circle>(
+                Eigen::Vector2d{event.mouseButton.x, event.mouseButton.y}, 10.,
+                Eigen::Vector2d{0.0, 0.0}, SFToEigenColor(sf::Color::Red));
+            physical_objects_.emplace_back(object);
+        }
     };
     event_handler_.AddProcess(sf::Event::EventType::MouseButtonPressed,
                               mouse_click_callback);
@@ -52,7 +59,7 @@ bool Application::Run()
     {
         window_.clear(sf::Color::Black);
 
-        renderer_.Render(window_);
+        renderer_.Render(window_, physical_objects_);
 
         window_.display();
 
