@@ -19,12 +19,14 @@ class Renderer
 {
  public:
     Renderer() = default;
+    Renderer(sf::Vector2u window_size);
     ~Renderer() = default;
 
-    Renderer(sf::Vector2u world_size) : world_size_(world_size){};
+    void Render(sf::RenderWindow& window);
 
  private:
-    sf::Vector2u world_size_{};
+    sf::RectangleShape world_box_{};
+    sf::RectangleShape dashboard_box_{};
 };
 }  // namespace engine
 

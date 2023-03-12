@@ -16,16 +16,14 @@ int main(int argc, char** argv)
 {
     constexpr size_t kWindowWidth = 1024;
     constexpr size_t kWindowHeight = 768;
-    constexpr size_t kWorldWidth = 500;
-    constexpr size_t kWorldHeight = 500;
 
     for (int i = 0; i < argc; ++i)
     {
         std::cout << argv[i] << std::endl;
     }
 
-    engine::Application app("engine", sf::Vector2u{kWindowWidth, kWindowHeight},
-                            sf::Vector2u{kWorldWidth, kWorldHeight});
+    engine::Application app("engine",
+                            sf::Vector2u{kWindowWidth, kWindowHeight});
 
     return app.Run();
 }

@@ -26,8 +26,7 @@ namespace engine
 class Application
 {
  public:
-    Application(std::string name, sf::Vector2u window_size,
-                sf::Vector2u world_size);
+    Application(std::string name, sf::Vector2u window_size);
     ~Application() = default;
 
     bool Run();
@@ -40,6 +39,8 @@ class Application
 
     EventManager event_handler_{};
     Renderer renderer_{};
+
+    void InitializeEventProcess();
 };
 }  // namespace engine
 

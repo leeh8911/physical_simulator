@@ -17,36 +17,42 @@
 
 namespace engine
 {
-Application::Application(std::string name, sf::Vector2u window_size,
-                         sf::Vector2u world_size)
+
+Application::Application(std::string name, sf::Vector2u window_size)
     : name_(std::move(name)),
       window_(sf::VideoMode(window_size.x, window_size.y), name_),
-      renderer_(world_size)
+      renderer_{window_size}
 {
     window_.setFramerateLimit(60U);
-    std::cout << world_size.x << ", " << world_size.y << std::endl;
 }
 
-bool Application::Run()
+void Application::InitializeEventProcess()
 {
-    auto mouse_click_callback = [](sf::Event event)
+    auto mouse_click_callback = [this](sf::Event event)
     {
         std::cout << event.mouseButton.button << "[" << event.mouseButton.x
                   << ", " << event.mouseButton.y << "]" << std::endl;
     };
+    event_handler_.AddProcess(sf::Event::EventType::MouseButtonPressed,
+                              mouse_click_callback);
+
     auto terminate_callback = [this](sf::Event event)
     {
         std::cout << "terminate" << event.type << std::endl;
         window_.close();
     };
-
-    event_handler_.AddProcess(sf::Event::EventType::MouseButtonPressed,
-                              mouse_click_callback);
     event_handler_.AddProcess(sf::Event::EventType::Closed, terminate_callback);
+}
+
+bool Application::Run()
+{
+    InitializeEventProcess();
 
     while (window_.isOpen())
     {
         window_.clear(sf::Color::Black);
+
+        renderer_.Render(window_);
 
         window_.display();
 
