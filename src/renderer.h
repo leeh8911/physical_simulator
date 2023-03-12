@@ -27,7 +27,9 @@ class Renderer
 
     Renderer(sf::Vector2u window_size);
 
-    void Render(sf::RenderWindow& window, const PhysicalObjectPtrList& objects);
+    void Render(sf::RenderWindow& window, const ObjectHandler& objects);
+
+    sf::RectangleShape GetWorldBox() const;
 
  private:
     sf::RectangleShape world_box_{};

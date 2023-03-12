@@ -38,14 +38,16 @@ Renderer::Renderer(sf::Vector2u window_size)
 }
 
 void Renderer::Render(sf::RenderWindow& window,
-                      const PhysicalObjectPtrList& objects)
+                      const ObjectHandler& object_handler)
 {
     window.draw(dashboard_box_);
     window.draw(world_box_);
 
-    for (auto& object : objects)
+    for (auto& drawable : object_handler.ToDrawables())
     {
-        window.draw(*(object->GetDrawable()));
+        window.draw(*drawable);
     }
 }
+
+sf::RectangleShape Renderer::GetWorldBox() const { return world_box_; }
 }  // namespace engine

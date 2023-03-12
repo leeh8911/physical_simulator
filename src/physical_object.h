@@ -41,8 +41,6 @@ class PhysicalObject
 
     void Update(double delta_time);
 
-    virtual DrawablePtr GetDrawable() const = 0;
-
  private:
     Eigen::Vector2d center_{0.0, 0.0};
     Eigen::Vector2d velocity_{0.0, 0.0};
@@ -64,11 +62,39 @@ class Circle : public PhysicalObject
     void SetRadius(double radius);
     double GetRadius() const;
 
-    DrawablePtr GetDrawable() const override;
-
  private:
     double radius_{};
     std::shared_ptr<sf::CircleShape> drawable_{};
+};
+
+class ObjectHandler
+{
+ public:
+    ObjectHandler(sf::Vector2f world_origin);
+    ObjectHandler() = default;
+    ~ObjectHandler() = default;
+
+    void SetWorldOrigin(sf::RectangleShape world_box);
+    void AddObject(PhysicalObjectPtr object);
+    void RemoveObject(PhysicalObjectPtr object);
+
+    void CreateCircle(sf::Vector2f center, double radius, sf::Vector2f velocity,
+                      sf::Color color);
+
+    PhysicalObjectPtrList GetObjects() const;
+    std::vector<DrawablePtr> ToDrawables() const;
+
+ private:
+    Eigen::Vector2d ConvertWindowToWorld(sf::Vector2f window_pos) const;
+    sf::Vector2f ConvertWorldToWindow(Eigen::Vector2d world_pos) const;
+    Eigen::Vector4d ConvertColor(sf::Color color) const;
+    sf::Color ConvertColor(Eigen::Vector4d color) const;
+    DrawablePtr ConvertDrawable(Circle object) const;
+
+    PhysicalObjectPtrList objects_{};
+
+    sf::Vector2f world_origin_{};
+    sf::RectangleShape world_box_{};
 };
 }  // namespace engine
 #endif  // SRC_PHYSICAL_OBJECT_H_

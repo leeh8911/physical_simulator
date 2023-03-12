@@ -23,9 +23,11 @@ namespace engine
 Application::Application(std::string name, sf::Vector2u window_size)
     : name_(std::move(name)),
       window_(sf::VideoMode(window_size.x, window_size.y), name_),
-      renderer_{window_size}
+      renderer_{window_size},
+      object_handler_{}
 {
     window_.setFramerateLimit(60U);
+    object_handler_.SetWorldOrigin(renderer_.GetWorldBox());
 }
 
 void Application::InitializeEventProcess()
@@ -34,10 +36,17 @@ void Application::InitializeEventProcess()
     {
         if (event.mouseButton.button == sf::Mouse::Button::Left)
         {
-            auto object = std::make_shared<Circle>(
-                Eigen::Vector2d{event.mouseButton.x, event.mouseButton.y}, 10.,
-                Eigen::Vector2d{0.0, 0.0}, SFToEigenColor(sf::Color::Red));
-            physical_objects_.emplace_back(object);
+            object_handler_.CreateCircle(
+                sf::Vector2f{static_cast<float>(event.mouseButton.x),
+                             static_cast<float>(event.mouseButton.y)},
+                10.0, sf::Vector2f{0.0, 0.0}, sf::Color::Red);
+            auto created = object_handler_.GetObjects().back();
+
+            std::cout << "mouse click [" << event.mouseButton.x << ", "
+                      << event.mouseButton.y << "]\n";
+
+            std::cout << "object position [" << created->GetCenter().x() << ", "
+                      << created->GetCenter().y() << "]\n";
         }
     };
     event_handler_.AddProcess(sf::Event::EventType::MouseButtonPressed,
@@ -59,7 +68,7 @@ bool Application::Run()
     {
         window_.clear(sf::Color::Black);
 
-        renderer_.Render(window_, physical_objects_);
+        renderer_.Render(window_, object_handler_);
 
         window_.display();
 

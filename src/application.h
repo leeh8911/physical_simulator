@@ -41,7 +41,7 @@ class Application
     EventManager event_handler_{};
     Renderer renderer_{};
 
-    std::vector<std::shared_ptr<PhysicalObject>> physical_objects_{};
+    ObjectHandler object_handler_{};
 
     void InitializeEventProcess();
 };
