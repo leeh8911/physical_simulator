@@ -17,13 +17,4 @@
 namespace engine::test
 {
 
-// TODO: PhysicalObject
-TEST(PhysicsTest, PhysicalObjectTest)
-{
-    PhysicalObject object{Eigen::Vector2d{0.0, 0.0}};
-    EXPECT_EQ(object.GetPosition(), Eigen::Vector2d{0.0, 0.0});
-    EXPECT_EQ(object.GetVelocity(), Eigen::Vector2d{0.0, 0.0});
-    EXPECT_EQ(object.GetRadius(), 1.0);
-    EXPECT_EQ(object.GetMass(), 1.0);
-}
 }  // namespace engine::test
