@@ -13,18 +13,18 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "src/event_handler.h"
-#include "src/physical_solver.h"
-
 namespace engine
 {
 class Renderer
 {
  public:
-    Renderer();
-    void operator()(const Event& event, const Solution& solution);
+    Renderer() = default;
+    ~Renderer() = default;
+
+    Renderer(sf::Vector2u world_size) : world_size_(world_size){};
 
  private:
+    sf::Vector2u world_size_{};
 };
 }  // namespace engine
 

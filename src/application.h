@@ -18,21 +18,17 @@
 #include <thread>
 #include <vector>
 
+#include "src/event_handler.h"
+#include "src/renderer.h"
+
 namespace engine
 {
-
-// start forward declaration
-class EventHandler;
-class PhysicalSolver;
-class Renderer;
-// end forward declaration
-
 class Application
 {
  public:
     Application(std::string name, sf::Vector2u window_size,
                 sf::Vector2u world_size);
-    ~Application();
+    ~Application() = default;
 
     bool Run();
 
@@ -41,8 +37,8 @@ class Application
     std::vector<std::thread> threads_{};
 
     sf::RenderWindow window_{};
-    PhysicalSolver solver_{};
-    EventHandler event_handler_{};
+
+    EventManager event_handler_{};
     Renderer renderer_{};
 };
 }  // namespace engine

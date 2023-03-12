@@ -13,21 +13,24 @@
 
 #include <SFML/Graphics.hpp>
 #include <functional>
+#include <unordered_map>
 
-#include "src/physical_solver.h"
 namespace engine
 {
-
-class Event
-{
-};
-
-class EventHandler
+class EventManager
 {
  public:
-    EventHandler();
+    EventManager() = default;
+    ~EventManager() = default;
 
-    Event operator()();
+    void AddProcess(sf::Event::EventType event_type,
+                    std::function<void(sf::Event)> callback);
+
+    void Process(sf::Event event);
+
+ private:
+    std::unordered_map<sf::Event::EventType, std::function<void(sf::Event)>>
+        process_map_{};
 };
 }  // namespace engine
 
