@@ -40,9 +40,5 @@ if (${BUILD_TEST} OR ${BUILD_APP})
         add_subdirectory(test)
     endif(${BUILD_TEST})
 
-    if(${BUILD_APP})
-        add_subdirectory(app)
-        add_dependencies(${PROJECT_APP} ${PROJECT_LIB})
-    endif(${BUILD_APP})
 
 endif(${BUILD_TEST} OR ${BUILD_APP})
