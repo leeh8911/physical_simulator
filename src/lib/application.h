@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "src/lib/event_handler.h"
-#include "src/lib/section.h"
 #include "src/lib/solver.h"
 #include "src/lib/user_interface.h"
 #include "src/lib/world.h"
@@ -38,10 +37,11 @@ class Application
     void render();
     void clear();
 
-    std::vector<SectionPtr> mSections{};
+    UserInterfacePtr createControlBox();
+
+    std::vector<UserInterfacePtr> mSections{};
     World mWorld{};
     Solver mSolver{};
-    UserInterface mUserInterface{};
     EventHandler mEventHandler{};
 
     std::shared_ptr<sf::RenderWindow> mWindow{nullptr};
