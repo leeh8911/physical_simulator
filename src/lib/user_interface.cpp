@@ -15,6 +15,25 @@
 namespace physics
 {
 
+void TextFormat::loadFont()
+{
+    if (!mFont.loadFromFile("../../res/KoPubWBM.ttf"))
+    {
+        throw std::runtime_error("Failed to load font");
+    }
+}
+
+sf::Text TextFormat::button(const std::string& text)
+{
+    sf::Text button;
+    button.setString(text);
+    button.setFont(mFont);
+    button.setCharacterSize(12);
+    button.setFillColor(sf::Color::Black);
+
+    return button;
+}
+
 void UserInterface::setRelativePosition(const sf::Vector2f& position)
 {
     mRelativePosition = position;
@@ -100,6 +119,11 @@ void Button::render(sf::RenderWindow& window)
     rect.setOutlineColor(sf::Color::Black);
     rect.setOutlineThickness(1.0f);
 
+    sf::Text text = TextFormat::button(this->getName());
+    text.setPosition(relativePos + relativeSize / 2.0f -
+                     sf::Vector2f(text.getLocalBounds().width / 2.0f,
+                                  text.getLocalBounds().height / 2.0f));
     window.draw(rect);
+    window.draw(text);
 }
 }  // namespace physics

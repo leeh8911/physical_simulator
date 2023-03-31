@@ -17,6 +17,7 @@
 
 #include "src/lib/event_handler.h"
 #include "src/lib/solver.h"
+#include "src/lib/task_manager.h"
 #include "src/lib/user_interface.h"
 #include "src/lib/world.h"
 
@@ -35,14 +36,18 @@ class Application
  private:
     void update();
     void render();
+    void pollEvent();
     void clear();
 
+    void createTasks();
     UserInterfacePtr createControlBox();
 
     std::vector<UserInterfacePtr> mSections{};
+    sf::Event mEvent{};
     World mWorld{};
     Solver mSolver{};
     EventHandler mEventHandler{};
+    TaskManager mTaskManager{};
 
     std::shared_ptr<sf::RenderWindow> mWindow{nullptr};
 };

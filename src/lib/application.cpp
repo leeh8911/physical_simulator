@@ -10,12 +10,18 @@
 
 #include "src/lib/application.h"
 
+#include <chrono>
 #include <utility>
+
+#include "src/lib/user_interface.h"
 
 namespace physics::application
 {
+
 void Application::initialize()
 {
+    TextFormat::loadFont();
+
     this->mWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(1700, 800),
                                                        "Physics Engine");
     this->mWindow->setFramerateLimit(60);
@@ -76,42 +82,41 @@ void Application::render()
     this->mWindow->display();
 }
 
+void Application::pollEvent() {}
+
 void Application::clear() { this->mWindow->clear(); }
 
 UserInterfacePtr Application::createControlBox()
 {
-    auto selectButton = std::make_shared<Button>();
-    selectButton->setName("Select");
-    selectButton->setRelativePosition({0.03F, 0.03F});
-    selectButton->setRelativeSize({0.2F, 0.2F});
-    selectButton->setColor(sf::Color(51, 51, 102, 255));
-    auto objectButton = std::make_shared<Button>();
-    objectButton->setName("Object");
-    objectButton->setRelativePosition({0.26F, 0.03F});
-    objectButton->setRelativeSize({0.2F, 0.2F});
-    objectButton->setColor(sf::Color(51, 51, 102, 255));
-    auto deleteButton = std::make_shared<Button>();
-    deleteButton->setName("Delete");
-    deleteButton->setRelativePosition({0.49F, 0.03F});
-    deleteButton->setRelativeSize({0.2F, 0.2F});
-    deleteButton->setColor(sf::Color(51, 51, 102, 255));
-    auto contraintsButton = std::make_shared<Button>();
-    contraintsButton->setName("Contraints");
-    contraintsButton->setRelativePosition({0.72F, 0.03F});
-    contraintsButton->setRelativeSize({0.2F, 0.2F});
-    contraintsButton->setColor(sf::Color(51, 51, 102, 255));
-    auto interactButton = std::make_shared<Button>();
-    interactButton->setName("Interact");
-    interactButton->setRelativePosition({0.03F, 0.26F});
-    interactButton->setRelativeSize({0.2F, 0.2F});
-    interactButton->setColor(sf::Color(51, 51, 102, 255));
+    std::vector<std::string> buttonNames = {"Select", "Object", "Delete",
+                                            "Contraints", "Interact"};
+
+    int rows = 4;
+    int cols = 4;
+    float margin = 0.03F;
 
     auto section = std::make_shared<Section>();
-    section->addChild(selectButton);
-    section->addChild(objectButton);
-    section->addChild(deleteButton);
-    section->addChild(contraintsButton);
-    section->addChild(interactButton);
+    size_t count = 0;
+    for (auto& buttonName : buttonNames)
+    {
+        size_t row = count / cols;
+        size_t col = count % cols;
+
+        sf::Vector2f position = {margin + (1.0F / cols) * col,
+                                 margin + (1.0F / rows) * row};
+        sf::Vector2f size = {(1.0F / cols) - margin * 2,
+                             (1.0F / rows) - margin * 2};
+
+        auto button = std::make_shared<Button>();
+        button->setName(buttonName);
+        button->setRelativePosition(position);
+        button->setRelativeSize(size);
+        button->setColor(sf::Color(51, 51, 102, 255));
+
+        section->addChild(button);
+
+        ++count;
+    }
 
     return section;
 }

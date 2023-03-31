@@ -18,6 +18,16 @@
 namespace physics
 {
 
+class TextFormat
+{
+ public:
+    static void loadFont();
+    static sf::Text button(const std::string& text);
+
+ private:
+    inline static sf::Font mFont{};
+};
+
 class UserInterface;
 using UserInterfacePtr = std::shared_ptr<UserInterface>;
 
