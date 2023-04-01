@@ -22,51 +22,35 @@ void Application::initialize()
 {
     TextFormat::loadFont();
 
+    this->initializeEventHandler();
+    auto shared_this = shared_from_this();
+    this->mMouseState = std::make_shared<DefaultMouseState>(shared_this);
+
     this->mWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(1700, 800),
                                                        "Physics Engine");
     this->mWindow->setFramerateLimit(60);
 
-    this->mSections.emplace_back(std::make_shared<Section>());
-    this->mSections.back()->setRelativePosition({0.0f, 0.0f});
-    this->mSections.back()->setRelativeSize({1.0f, 1.0f});
-    this->mSections.back()->setColor(sf::Color::Black);
-    this->mSections.back()->setName("WorldView");
-
-    this->mSections.emplace_back(std::make_shared<Section>());
-    this->mSections.back()->setRelativePosition({0.0f, 0.7f});
-    this->mSections.back()->setRelativeSize({0.2f, 0.3f});
-    this->mSections.back()->setColor(sf::Color(51, 51, 51, 255));
-    this->mSections.back()->setName("MiniMap");
-
-    this->mSections.emplace_back(std::make_shared<Section>());
-    this->mSections.back()->setRelativePosition({0.2f, 0.8f});
-    this->mSections.back()->setRelativeSize({0.6f, 0.2f});
-    this->mSections.back()->setColor(sf::Color(51, 51, 51, 255));
-    this->mSections.back()->setName("Dialog");
-
-    this->mSections.emplace_back(this->createControlBox());
-    this->mSections.back()->setRelativePosition({0.8f, 0.7f});
-    this->mSections.back()->setRelativeSize({0.2f, 0.3f});
-    this->mSections.back()->setColor(sf::Color(51, 51, 51, 255));
-    this->mSections.back()->setName("ControlBox");
+    this->initializeSections();
 }
 
 void Application::run()
 {
     while (true)
     {
-        this->clear();
-        sf::Event event{};
-        while (this->mWindow->pollEvent(event))
+        this->handleEvent();
+
+        if (this->mWindow->isOpen())
         {
-            if (event.type == sf::Event::Closed)
-            {
-                this->mWindow->close();
-                return;
-            }
+            this->clear();
+
+            this->update();
+
+            this->render();
         }
-        this->update();
-        this->render();
+        else
+        {
+            break;
+        }
     }
 }
 
@@ -82,7 +66,10 @@ void Application::render()
     this->mWindow->display();
 }
 
-void Application::pollEvent() {}
+void Application::handleEvent()
+{
+    this->mEventHandler->handleEvent(this->mWindow);
+}
 
 void Application::clear() { this->mWindow->clear(); }
 
@@ -119,5 +106,59 @@ UserInterfacePtr Application::createControlBox()
     }
 
     return section;
+}
+
+void Application::initializeEventHandler()
+{
+    this->mEventHandler = std::make_shared<EventHandler>();
+    this->initializeEventCallbacks();
+}
+
+void Application::initializeEventCallbacks()
+{
+    auto closedCallback = [this]() { this->mWindow->close(); };
+    this->mEventHandler->addCallback(
+        EventType::Closed, std::make_shared<EventCallback>(closedCallback));
+
+    auto mouseClickCallback = [this]()
+    {
+        auto event = this->mEventHandler->getEvent();
+        auto mousePosition =
+            sf::Vector2f(static_cast<float>(event.mouseButton.x),
+                         static_cast<float>(event.mouseButton.y));
+
+        mMouseState->press(mousePosition);
+    };
+
+    this->mEventHandler->addCallback(
+        EventType::MousePressed,
+        std::make_shared<EventCallback>(mouseClickCallback));
+}
+
+void Application::initializeSections()
+{
+    this->mSections.emplace_back(std::make_shared<Section>());
+    this->mSections.back()->setRelativePosition({0.0f, 0.0f});
+    this->mSections.back()->setRelativeSize({1.0f, 1.0f});
+    this->mSections.back()->setColor(sf::Color::Black);
+    this->mSections.back()->setName("WorldView");
+
+    this->mSections.emplace_back(std::make_shared<Section>());
+    this->mSections.back()->setRelativePosition({0.0f, 0.7f});
+    this->mSections.back()->setRelativeSize({0.2f, 0.3f});
+    this->mSections.back()->setColor(sf::Color(51, 51, 51, 255));
+    this->mSections.back()->setName("MiniMap");
+
+    this->mSections.emplace_back(std::make_shared<Section>());
+    this->mSections.back()->setRelativePosition({0.2f, 0.8f});
+    this->mSections.back()->setRelativeSize({0.6f, 0.2f});
+    this->mSections.back()->setColor(sf::Color(51, 51, 51, 255));
+    this->mSections.back()->setName("Dialog");
+
+    this->mSections.emplace_back(this->createControlBox());
+    this->mSections.back()->setRelativePosition({0.8f, 0.7f});
+    this->mSections.back()->setRelativeSize({0.2f, 0.3f});
+    this->mSections.back()->setColor(sf::Color(51, 51, 51, 255));
+    this->mSections.back()->setName("ControlBox");
 }
 }  // namespace physics::application
