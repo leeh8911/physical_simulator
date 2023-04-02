@@ -54,6 +54,16 @@ void Application::run()
     }
 }
 
+std::vector<UserInterfacePtr> Application::getSections()
+{
+    return this->mSections;
+}
+
+void Application::addObject(sf::Vector2f position)
+{
+    this->mWorld.addObject(position);
+}
+
 void Application::update() {}
 
 void Application::render()
@@ -62,6 +72,8 @@ void Application::render()
     {
         section->render(*this->mWindow);
     }
+
+    this->mWorld.render(*this->mWindow);
 
     this->mWindow->display();
 }
@@ -75,8 +87,8 @@ void Application::clear() { this->mWindow->clear(); }
 
 UserInterfacePtr Application::createControlBox()
 {
-    std::vector<std::string> buttonNames = {"Select", "Object", "Delete",
-                                            "Contraints", "Interact"};
+    this->mButtonNames = {"Select", "Object",   "Contraints",
+                          "Delete", "Interact", "Cancel"};
 
     int rows = 4;
     int cols = 4;
@@ -84,7 +96,7 @@ UserInterfacePtr Application::createControlBox()
 
     auto section = std::make_shared<Section>();
     size_t count = 0;
-    for (auto& buttonName : buttonNames)
+    for (auto& buttonName : mButtonNames)
     {
         size_t row = count / cols;
         size_t col = count % cols;
@@ -99,6 +111,12 @@ UserInterfacePtr Application::createControlBox()
         button->setRelativePosition(position);
         button->setRelativeSize(size);
         button->setColor(sf::Color(51, 51, 102, 255));
+
+        auto callback = [this, buttonName]() {
+            this->mMouseState =
+                newMouseState(buttonName, this->shared_from_this());
+        };
+        button->setCallback(callback);
 
         section->addChild(button);
 

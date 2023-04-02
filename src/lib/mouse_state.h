@@ -42,12 +42,24 @@ class DefaultMouseState : public MouseState
 {
  public:
     DefaultMouseState(ApplicationPtr app);
-    virtual ~DefaultMouseState() = default;
 
     void press(sf::Vector2f mousePosition) override;
     void release(sf::Vector2f mousePosition) override;
 
  private:
 };
+
+class GenerateObjectMouseState : public MouseState
+{
+ public:
+    GenerateObjectMouseState(ApplicationPtr app);
+
+    void press(sf::Vector2f mousePosition) override;
+    void release(sf::Vector2f mousePosition) override;
+
+ private:
+};
+
+MouseStatePtr newMouseState(std::string name, ApplicationPtr app);
 }  // namespace physics
 #endif  // SRC_LIB_MOUSE_STATE_H_

@@ -14,16 +14,7 @@
 
 namespace physics
 {
-EventHandler::EventHandler() : mCallbacks()
-{
-    auto noneCallback = []()
-    {
-        // std::cout << "none" << std::endl;
-    };
-
-    this->addCallback(EventType::None,
-                      std::make_shared<EventCallback>(noneCallback));
-}
+EventHandler::EventHandler() : mCallbacks() {}
 
 void EventHandler::handleEvent(std::shared_ptr<sf::RenderWindow> window)
 {

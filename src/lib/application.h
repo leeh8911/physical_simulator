@@ -34,6 +34,9 @@ class Application : public std::enable_shared_from_this<Application>
     void initialize();
     void run();
 
+    std::vector<UserInterfacePtr> getSections();
+    void addObject(sf::Vector2f position);
+
  private:
     void update();
     void render();
@@ -56,6 +59,8 @@ class Application : public std::enable_shared_from_this<Application>
     EventHandlerPtr mEventHandler{};
     std::shared_ptr<sf::RenderWindow> mWindow{nullptr};
     MouseStatePtr mMouseState{nullptr};
+
+    std::vector<std::string> mButtonNames{};
 };
 
 }  // namespace physics::application
