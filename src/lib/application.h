@@ -16,14 +16,16 @@
 #include <vector>
 
 #include "src/lib/event_handler.h"
+#include "src/lib/mouse_state.h"
 #include "src/lib/solver.h"
+#include "src/lib/task_manager.h"
 #include "src/lib/user_interface.h"
 #include "src/lib/world.h"
 
 namespace physics::application
 {
 
-class Application
+class Application : public std::enable_shared_from_this<Application>
 {
  public:
     Application() = default;
@@ -32,19 +34,33 @@ class Application
     void initialize();
     void run();
 
+    std::vector<UserInterfacePtr> getSections();
+    void addObject(sf::Vector2f position);
+
  private:
     void update();
     void render();
+    void handleEvent();
     void clear();
 
+    void createTasks();
     UserInterfacePtr createControlBox();
+
+    void initializeEventHandler();
+    void initializeEventCallbacks();
+
+    void initializeSections();
 
     std::vector<UserInterfacePtr> mSections{};
     World mWorld{};
     Solver mSolver{};
-    EventHandler mEventHandler{};
+    TaskManager mTaskManager{};
 
+    EventHandlerPtr mEventHandler{};
     std::shared_ptr<sf::RenderWindow> mWindow{nullptr};
+    MouseStatePtr mMouseState{nullptr};
+
+    std::vector<std::string> mButtonNames{};
 };
 
 }  // namespace physics::application

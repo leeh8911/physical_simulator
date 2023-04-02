@@ -10,16 +10,151 @@
 
 #include "src/lib/application.h"
 
+#include <chrono>
 #include <utility>
+
+#include "src/lib/user_interface.h"
 
 namespace physics::application
 {
+
 void Application::initialize()
 {
+    TextFormat::loadFont();
+
+    this->initializeEventHandler();
+    auto shared_this = shared_from_this();
+    this->mMouseState = std::make_shared<DefaultMouseState>(shared_this);
+
     this->mWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(1700, 800),
                                                        "Physics Engine");
     this->mWindow->setFramerateLimit(60);
 
+    this->initializeSections();
+}
+
+void Application::run()
+{
+    while (true)
+    {
+        this->handleEvent();
+
+        if (this->mWindow->isOpen())
+        {
+            this->clear();
+
+            this->update();
+
+            this->render();
+        }
+        else
+        {
+            break;
+        }
+    }
+}
+
+std::vector<UserInterfacePtr> Application::getSections()
+{
+    return this->mSections;
+}
+
+void Application::addObject(sf::Vector2f position)
+{
+    this->mWorld.addObject(position);
+}
+
+void Application::update() {}
+
+void Application::render()
+{
+    for (auto& section : this->mSections)
+    {
+        section->render(*this->mWindow);
+    }
+
+    this->mWorld.render(*this->mWindow);
+
+    this->mWindow->display();
+}
+
+void Application::handleEvent()
+{
+    this->mEventHandler->handleEvent(this->mWindow);
+}
+
+void Application::clear() { this->mWindow->clear(); }
+
+UserInterfacePtr Application::createControlBox()
+{
+    this->mButtonNames = {"Select", "Object",   "Contraints",
+                          "Delete", "Interact", "Cancel"};
+
+    int rows = 4;
+    int cols = 4;
+    float margin = 0.03F;
+
+    auto section = std::make_shared<Section>();
+    size_t count = 0;
+    for (auto& buttonName : mButtonNames)
+    {
+        size_t row = count / cols;
+        size_t col = count % cols;
+
+        sf::Vector2f position = {margin + (1.0F / cols) * col,
+                                 margin + (1.0F / rows) * row};
+        sf::Vector2f size = {(1.0F / cols) - margin * 2,
+                             (1.0F / rows) - margin * 2};
+
+        auto button = std::make_shared<Button>();
+        button->setName(buttonName);
+        button->setRelativePosition(position);
+        button->setRelativeSize(size);
+        button->setColor(sf::Color(51, 51, 102, 255));
+
+        auto callback = [this, buttonName]() {
+            this->mMouseState =
+                newMouseState(buttonName, this->shared_from_this());
+        };
+        button->setCallback(callback);
+
+        section->addChild(button);
+
+        ++count;
+    }
+
+    return section;
+}
+
+void Application::initializeEventHandler()
+{
+    this->mEventHandler = std::make_shared<EventHandler>();
+    this->initializeEventCallbacks();
+}
+
+void Application::initializeEventCallbacks()
+{
+    auto closedCallback = [this]() { this->mWindow->close(); };
+    this->mEventHandler->addCallback(
+        EventType::Closed, std::make_shared<EventCallback>(closedCallback));
+
+    auto mouseClickCallback = [this]()
+    {
+        auto event = this->mEventHandler->getEvent();
+        auto mousePosition =
+            sf::Vector2f(static_cast<float>(event.mouseButton.x),
+                         static_cast<float>(event.mouseButton.y));
+
+        mMouseState->press(mousePosition);
+    };
+
+    this->mEventHandler->addCallback(
+        EventType::MousePressed,
+        std::make_shared<EventCallback>(mouseClickCallback));
+}
+
+void Application::initializeSections()
+{
     this->mSections.emplace_back(std::make_shared<Section>());
     this->mSections.back()->setRelativePosition({0.0f, 0.0f});
     this->mSections.back()->setRelativeSize({1.0f, 1.0f});
@@ -43,76 +178,5 @@ void Application::initialize()
     this->mSections.back()->setRelativeSize({0.2f, 0.3f});
     this->mSections.back()->setColor(sf::Color(51, 51, 51, 255));
     this->mSections.back()->setName("ControlBox");
-}
-
-void Application::run()
-{
-    while (true)
-    {
-        this->clear();
-        sf::Event event{};
-        while (this->mWindow->pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-            {
-                this->mWindow->close();
-                return;
-            }
-        }
-        this->update();
-        this->render();
-    }
-}
-
-void Application::update() {}
-
-void Application::render()
-{
-    for (auto& section : this->mSections)
-    {
-        section->render(*this->mWindow);
-    }
-
-    this->mWindow->display();
-}
-
-void Application::clear() { this->mWindow->clear(); }
-
-UserInterfacePtr Application::createControlBox()
-{
-    auto selectButton = std::make_shared<Button>();
-    selectButton->setName("Select");
-    selectButton->setRelativePosition({0.03F, 0.03F});
-    selectButton->setRelativeSize({0.2F, 0.2F});
-    selectButton->setColor(sf::Color(51, 51, 102, 255));
-    auto objectButton = std::make_shared<Button>();
-    objectButton->setName("Object");
-    objectButton->setRelativePosition({0.26F, 0.03F});
-    objectButton->setRelativeSize({0.2F, 0.2F});
-    objectButton->setColor(sf::Color(51, 51, 102, 255));
-    auto deleteButton = std::make_shared<Button>();
-    deleteButton->setName("Delete");
-    deleteButton->setRelativePosition({0.49F, 0.03F});
-    deleteButton->setRelativeSize({0.2F, 0.2F});
-    deleteButton->setColor(sf::Color(51, 51, 102, 255));
-    auto contraintsButton = std::make_shared<Button>();
-    contraintsButton->setName("Contraints");
-    contraintsButton->setRelativePosition({0.72F, 0.03F});
-    contraintsButton->setRelativeSize({0.2F, 0.2F});
-    contraintsButton->setColor(sf::Color(51, 51, 102, 255));
-    auto interactButton = std::make_shared<Button>();
-    interactButton->setName("Interact");
-    interactButton->setRelativePosition({0.03F, 0.26F});
-    interactButton->setRelativeSize({0.2F, 0.2F});
-    interactButton->setColor(sf::Color(51, 51, 102, 255));
-
-    auto section = std::make_shared<Section>();
-    section->addChild(selectButton);
-    section->addChild(objectButton);
-    section->addChild(deleteButton);
-    section->addChild(contraintsButton);
-    section->addChild(interactButton);
-
-    return section;
 }
 }  // namespace physics::application

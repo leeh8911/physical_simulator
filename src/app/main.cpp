@@ -9,7 +9,9 @@
 ///
 
 #include <iostream>
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "src/lib/application.h"
 
@@ -19,10 +21,10 @@ int main(int /* argc */, char** /* argv */)
 
     using namespace physics::application;
 
-    Application app;
+    auto app = std::make_shared<Application>();
 
-    app.initialize();
-    app.run();
+    app->initialize();
+    app->run();
 
     return 0;
 }

@@ -50,8 +50,8 @@ test: build-test run-test
 
 .PHONY: run-app
 run-app:
-	cd build && \
-	bin\$(PROJECT_NAME)_app.exe
+	cd build/bin && \
+	$(PROJECT_NAME)_app.exe
 	
 .PHONY: app
 app: build-app run-app
